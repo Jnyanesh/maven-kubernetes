@@ -39,17 +39,22 @@ pipeline {
         }
     }
 
-    /* --- ADDED POST SECTION --- */
     post {
+
         success {
-            mail to: 'itsmejnyanesh@gmail.com',
-                 subject: "Success: Pipeline ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
-                 body: "The build was successful. View the details here: ${env.BUILD_URL}"
+            emailext (
+                subject: "SUCCESS: ${JOB_NAME} #${BUILD_NUMBER}",
+                body: "Build succeeded!\nCheck: ${BUILD_URL}",
+                to: "naveenmys64@gmail.com"
+            )
         }
+
         failure {
-            mail to: 'itsmejnyanesh@gmail.com',
-                 subject: "Failed: Pipeline ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
-                 body: "The build failed. Check the logs at: ${env.BUILD_URL}"
+            emailext (
+                subject: "FAILED: ${JOB_NAME} #${BUILD_NUMBER}",
+                body: "Build failed!\nCheck: ${BUILD_URL}",
+                to: "naveenmys64@gmail.com"
+            )
         }
     }
 }
