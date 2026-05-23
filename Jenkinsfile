@@ -8,7 +8,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = 'demo-app-web:latest'
-        CONTAINER_NAME = 'demo-app-container'
+        PATH = "${env.PATH}:/home/jnyanesh/.local/bin"
     }
 
     stages {
@@ -21,7 +21,6 @@ pipeline {
 
         stage('Build & Package') {
             steps {
-                // This command compiles, runs tests, and packages the app as an executable JAR using Spring Boot plugin
                 sh 'mvn clean package'
             }
         }
@@ -32,14 +31,17 @@ pipeline {
             }
         }
 
-        stage('Run Docker Container') {
+        stage('Deploy to Kubernetes') {
             steps {
-                // Stop and remove any existing container running the app
-                sh "docker stop ${CONTAINER_NAME} || true"
-                sh "docker rm ${CONTAINER_NAME} || true"
+                // Load the locally built image into the Minikube cluster
+                sh "minikube image load ${DOCKER_IMAGE}"
                 
-                // Run the new container in detached mode, mapping port 5000
-                sh "docker run -d --name ${CONTAINER_NAME} -p 5000:5000 ${DOCKER_IMAGE}"
+                // Deploy the application
+                sh "kubectl apply -f k8s/deployment.yaml"
+                sh "kubectl apply -f k8s/service.yaml"
+                
+                // Verify rollout
+                sh "kubectl rollout status deployment/demo-app-web"
             }
         }
     }
@@ -48,7 +50,7 @@ pipeline {
         success {
             emailext (
                 subject: "SUCCESS: ${JOB_NAME} #${BUILD_NUMBER}",
-                body: "Build, Docker Image Creation, and Deployment succeeded!\nCheck: ${BUILD_URL}",
+                body: "Kubernetes Deployment succeeded!\nCheck: ${BUILD_URL}",
                 to: "itsmejnyanesh@gmail.com"
             )
         }
