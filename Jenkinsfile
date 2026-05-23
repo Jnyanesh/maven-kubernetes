@@ -14,8 +14,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url:'https://github.com/Naveen04jan/ven.git', 
-                credentialsId: 'github-token'
+                git branch: 'main', url:'https://github.com/Jnyanesh/maven-kubernetes.git'
             }
         }
 
