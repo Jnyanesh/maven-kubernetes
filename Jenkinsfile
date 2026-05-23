@@ -42,7 +42,7 @@ pipeline {
                 
                 // Verify rollout
                 sh "kubectl rollout status deployment/demo-app-web"
-                sh "minikube service demo-app-web-service --url"
+                sh 'echo "Application is available at: http://$(minikube ip):30500"'
             }
         }
     }
