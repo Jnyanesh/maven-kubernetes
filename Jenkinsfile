@@ -6,6 +6,11 @@ pipeline {
         jdk 'JDK21'
     }
 
+    environment {
+        DOCKER_IMAGE = 'demo-app-web:latest'
+        CONTAINER_NAME = 'demo-app-container'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -14,37 +19,36 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Build & Package') {
             steps {
-                sh 'mvn clean compile'
+                // This command compiles, runs tests, and packages the app as an executable JAR using Spring Boot plugin
+                sh 'mvn clean package'
             }
         }
 
-        stage('Test') {
+        stage('Build Docker Image') {
             steps {
-                sh 'mvn test'
+                sh "docker build -t ${DOCKER_IMAGE} ."
             }
         }
 
-        stage('Package') {
+        stage('Run Docker Container') {
             steps {
-                sh 'mvn package'
-            }
-        }
-
-        stage('Run Application') {
-            steps {
-                sh 'mvn exec:java -Dexec.mainClass="com.example.app.App"'
+                // Stop and remove any existing container running the app
+                sh "docker stop ${CONTAINER_NAME} || true"
+                sh "docker rm ${CONTAINER_NAME} || true"
+                
+                // Run the new container in detached mode, mapping port 5000
+                sh "docker run -d --name ${CONTAINER_NAME} -p 5000:5000 ${DOCKER_IMAGE}"
             }
         }
     }
 
     post {
-
         success {
             emailext (
                 subject: "SUCCESS: ${JOB_NAME} #${BUILD_NUMBER}",
-                body: "Build succeeded!\nCheck: ${BUILD_URL}",
+                body: "Build, Docker Image Creation, and Deployment succeeded!\nCheck: ${BUILD_URL}",
                 to: "itsmejnyanesh@gmail.com"
             )
         }
@@ -52,7 +56,7 @@ pipeline {
         failure {
             emailext (
                 subject: "FAILED: ${JOB_NAME} #${BUILD_NUMBER}",
-                body: "Build failed!\nCheck: ${BUILD_URL}",
+                body: "Pipeline failed!\nCheck: ${BUILD_URL}",
                 to: "itsmejnyanesh@gmail.com"
             )
         }
