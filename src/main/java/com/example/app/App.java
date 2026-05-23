@@ -22,11 +22,29 @@ public class App {
     }
 
     @GetMapping("/api/greet")
-    public Map<String, String> greet(@RequestParam(value = "name", defaultValue = "Developer") String name) {
-        String finalName = StringUtils.isNotBlank(name) ? name : "Developer";
-        String message = "Hello, " + finalName + "! Welcome to the modern Spring Boot CI/CD Demo.";
+    public Map<String, String> greet(@RequestParam(value = "name", defaultValue = "Subject 0") String name) {
+        String finalName = StringUtils.isNotBlank(name) ? name : "Subject 0";
+        
+        String[] titles = {
+            "the Quantum Drifter", "of the Neon Void", "the Cyber Mancer", 
+            "the Holographic Entity", "from the Outer Rim", "the Data Weaver", 
+            "the Star Forger", "of the Syntax Realm", "the Astral Corsair", 
+            "the Flux Architect"
+        };
+        
+        String[] attributes = {
+            "Level 99", "Class: Enigma", "Status: Awakened", 
+            "Core: Unstable", "Power: Limitless", "Origin: Unknown",
+            "Aura: Prismatic", "Signal: Lost", "Phase: Ascended"
+        };
+        
+        int titleIndex = Math.abs(finalName.hashCode()) % titles.length;
+        int attrIndex = Math.abs(finalName.hashCode() * 31) % attributes.length;
+        
+        String identity = finalName + " " + titles[titleIndex] + " // " + attributes[attrIndex];
+        
         Map<String, String> response = new HashMap<>();
-        response.put("message", message);
+        response.put("message", identity);
         return response;
     }
 }

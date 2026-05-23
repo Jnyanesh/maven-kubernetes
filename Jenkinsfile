@@ -32,6 +32,7 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
+                // Ensure Minikube is running before we try to deploy
                 sh "minikube start --driver=docker --memory=2048"
                 // Load the locally built image into the Minikube cluster
                 sh "minikube image load ${DOCKER_IMAGE}"
@@ -42,7 +43,8 @@ pipeline {
                 
                 // Verify rollout
                 sh "kubectl rollout status deployment/demo-app-web"
-                sh 'echo "Application is available at: http://$(minikube ip):30500"'
+                // Print instructions on how to access the application
+                sh 'echo "Deployment successful! To access the application, run this command in your own terminal: minikube service demo-app-web-service"'
             }
         }
     }

@@ -3,195 +3,291 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spring Boot & Docker Demo</title>
+    <title>Cosmic Identity Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --glass-bg: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            --neon-cyan: #00f3ff;
+            --neon-pink: #ff00aa;
+            --dark-bg: #05050a;
+            --glass-bg: rgba(10, 10, 20, 0.4);
+            --glass-border: rgba(0, 243, 255, 0.2);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 243, 255, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(45deg, #12112e, #1b194a, #2a2569, #3d348b);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--dark-bg);
+            background-image: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #05050a 100%);
+            color: #fff;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             overflow: hidden;
+            position: relative;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        /* Starry background effect */
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background: 
+                transparent url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSIxIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjgiLz48Y2lyY2xlIGN4PSIyNTAiIGN5PSIxNTAiIHI9IjAuNSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC41Ii8+PGNpcmNsZSBjeD0iMTgwIiBjeT0iMzIwIiByPSIxLjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuMyIvPjwvc3ZnPg==') repeat;
+            animation: moveStars 100s linear infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes moveStars {
+            from { background-position: 0 0; }
+            to { background-position: 1000px 1000px; }
         }
 
         .container {
+            position: relative;
+            z-index: 1;
             background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 24px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 20px;
             border: 1px solid var(--glass-border);
             box-shadow: var(--glass-shadow);
             padding: 3rem 4rem;
             text-align: center;
-            max-width: 600px;
+            max-width: 650px;
             width: 90%;
-            transform: translateY(20px);
+            transform: translateY(30px) scale(0.95);
             opacity: 0;
-            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: slideIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        @keyframes slideUp {
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(45deg, var(--neon-cyan), transparent, var(--neon-pink));
+            z-index: -1;
+            border-radius: 22px;
+            opacity: 0.3;
+            animation: pulseGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes slideIn {
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        @keyframes pulseGlow {
+            0% { opacity: 0.1; }
+            100% { opacity: 0.4; }
         }
 
         h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            font-weight: 700;
-            background: linear-gradient(to right, #a18cd1 0%, #fbc2eb 100%);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(to right, var(--neon-cyan), var(--neon-pink));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
         }
 
         p {
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 2rem;
-            line-height: 1.6;
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 2.5rem;
+            font-weight: 500;
+            letter-spacing: 1px;
         }
 
         .input-group {
             display: flex;
-            gap: 10px;
-            margin-bottom: 2rem;
+            gap: 15px;
+            margin-bottom: 2.5rem;
             justify-content: center;
+            align-items: stretch;
         }
 
         input {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 12px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            padding: 15px 25px;
             border-radius: 12px;
-            color: white;
-            font-size: 1rem;
+            color: var(--neon-cyan);
+            font-size: 1.2rem;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
             outline: none;
             transition: all 0.3s ease;
-            width: 250px;
+            width: 300px;
+            letter-spacing: 1px;
+        }
+
+        input::placeholder {
+            color: rgba(0, 243, 255, 0.3);
         }
 
         input:focus {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.3);
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+            background: rgba(0, 243, 255, 0.05);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2), inset 0 0 10px rgba(0, 243, 255, 0.1);
         }
 
         button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px 24px;
+            background: transparent;
+            color: #fff;
+            border: 1px solid var(--neon-pink);
+            padding: 0 30px;
             border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 600;
+            font-size: 1.2rem;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--neon-pink);
+            z-index: -1;
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.4s cubic-bezier(0.86, 0, 0.07, 1);
         }
 
         button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(118, 75, 162, 0.6);
+            box-shadow: 0 0 25px rgba(255, 0, 170, 0.4);
+            border-color: transparent;
+        }
+
+        button:hover::before {
+            transform: scaleX(1);
+            transform-origin: left;
         }
 
         button:active {
-            transform: translateY(0);
+            transform: scale(0.95);
         }
 
         .result-box {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 20px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 25px;
             border-radius: 12px;
-            font-size: 1.2rem;
-            min-height: 28px;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 1.5rem;
+            font-family: 'Orbitron', sans-serif;
+            min-height: 80px;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(255, 0, 170, 0.2);
+            color: var(--neon-pink);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 0 0 10px rgba(255, 0, 170, 0.3);
+            position: relative;
+            overflow: hidden;
         }
 
         .result-box.loading {
-            opacity: 0.5;
-            animation: pulse 1.5s infinite;
+            color: var(--neon-cyan);
+            border-color: rgba(0, 243, 255, 0.2);
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
         }
 
-        @keyframes pulse {
-            0% { opacity: 0.5; }
-            50% { opacity: 0.8; }
-            100% { opacity: 0.5; }
-        }
-
-        /* Abstract Background Shapes */
-        .shape {
+        .result-box.loading::after {
+            content: '';
             position: absolute;
-            filter: blur(60px);
-            z-index: -1;
-            opacity: 0.6;
+            bottom: 0;
+            left: 0;
+            height: 2px;
+            width: 100%;
+            background: var(--neon-cyan);
+            animation: scanning 1s linear infinite;
         }
 
-        .shape-1 {
-            width: 300px;
-            height: 300px;
-            background: #ff00cc;
-            border-radius: 50%;
-            top: -100px;
-            left: -100px;
+        @keyframes scanning {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
 
-        .shape-2 {
-            width: 400px;
-            height: 400px;
-            background: #3333ff;
+        /* Abstract glowing orbs */
+        .orb {
+            position: absolute;
             border-radius: 50%;
-            bottom: -150px;
-            right: -100px;
+            filter: blur(80px);
+            z-index: 0;
+            animation: float 10s ease-in-out infinite alternate;
+        }
+
+        .orb-1 {
+            width: 300px; height: 300px;
+            background: rgba(0, 243, 255, 0.15);
+            top: 10%; left: 10%;
+        }
+
+        .orb-2 {
+            width: 400px; height: 400px;
+            background: rgba(255, 0, 170, 0.15);
+            bottom: -50px; right: 10%;
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(30px, 50px); }
         }
     </style>
 </head>
 <body>
-    <div class="shape shape-1"></div>
-    <div class="shape shape-2"></div>
+    <div class="stars"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
 
     <div class="container">
-        <h1>Spring Web UI</h1>
-        <p>A modern web application powered by Spring Boot and built for Docker integration.</p>
+        <h1>Cosmic Identity</h1>
+        <p>Initialize the sequence to reveal your true cosmic designation.</p>
 
         <div class="input-group">
-            <input type="text" id="nameInput" placeholder="Enter your name" onkeypress="if(event.key === 'Enter') fetchGreeting()">
-            <button onclick="fetchGreeting()">Greet Me</button>
+            <input type="text" id="nameInput" placeholder="Enter base subject name..." onkeypress="if(event.key === 'Enter') fetchIdentity()">
+            <button onclick="fetchIdentity()">Initialize</button>
         </div>
 
         <div class="result-box" id="result">
-            Enter a name and click the button to get a greeting.
+            Awaiting subject input...
         </div>
     </div>
 
     <script>
-        async function fetchGreeting() {
+        async function fetchIdentity() {
             const nameInput = document.getElementById('nameInput');
             const resultBox = document.getElementById('result');
             const name = nameInput.value.trim();
 
             resultBox.classList.add('loading');
-            resultBox.innerText = 'Fetching greeting...';
+            resultBox.innerText = 'Scanning databanks...';
+            
+            // Add a small artificial delay for dramatic effect
+            await new Promise(r => setTimeout(r, 600));
 
             try {
                 const url = name ? `/api/greet?name=${encodeURIComponent(name)}` : '/api/greet';
@@ -199,10 +295,24 @@
                 const data = await response.json();
                 
                 resultBox.classList.remove('loading');
-                resultBox.innerText = data.message;
+                
+                // Typing effect
+                resultBox.innerText = '';
+                const text = data.message;
+                let i = 0;
+                
+                const typeWriter = setInterval(() => {
+                    if (i < text.length) {
+                        resultBox.innerText += text.charAt(i);
+                        i++;
+                    } else {
+                        clearInterval(typeWriter);
+                    }
+                }, 30);
+                
             } catch (error) {
                 resultBox.classList.remove('loading');
-                resultBox.innerText = 'Error fetching greeting. Is the server running?';
+                resultBox.innerText = 'Connection lost. Retrying link...';
                 console.error('Error:', error);
             }
         }
