@@ -32,6 +32,7 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
+                sh "minikube start --driver=docker --memory=2048"
                 // Load the locally built image into the Minikube cluster
                 sh "minikube image load ${DOCKER_IMAGE}"
                 
