@@ -42,6 +42,7 @@ pipeline {
                 
                 // Verify rollout
                 sh "kubectl rollout status deployment/demo-app-web"
+                sh "minikube service demo-app-web-service --url"
             }
         }
     }
